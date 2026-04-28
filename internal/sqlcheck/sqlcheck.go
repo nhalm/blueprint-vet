@@ -106,10 +106,17 @@ func Run(dir string) []Finding {
 	return findings
 }
 
-var softDeleteOptOutRe = regexp.MustCompile(`(?i)(IncludingDeleted|Audit|Trash|AllVersions)$`)
+var (
+	softDeleteOptOutRe = regexp.MustCompile(`(?i)(IncludingDeleted|Audit|Trash|AllVersions)$`)
+	// In-SQL escape hatch for tables without a `deleted_at` column.
+	// Place this comment line anywhere in the query body.
+	softDeleteSkipRe = regexp.MustCompile(`(?im)^\s*--\s*blueprint-vet:skip\s+softdelete\b`)
+)
 
 // SoftDelete (R-9) flags read queries (`:one`, `:many`, `:paginated`) whose SQL
-// lacks a `deleted_at` token, unless the query name opts out via convention.
+// lacks a `deleted_at` token, unless the query name opts out via convention OR
+// the query body contains `-- blueprint-vet:skip softdelete` (for tables that
+// have no deleted_at column).
 func SoftDelete(b Block) []Finding {
 	if b.Type != "one" && b.Type != "many" && b.Type != "paginated" {
 		return nil
@@ -124,9 +131,12 @@ func SoftDelete(b Block) []Finding {
 	if softDeleteOptOutRe.MatchString(b.Name) {
 		return nil
 	}
+	if softDeleteSkipRe.MatchString(b.SQL) {
+		return nil
+	}
 	return []Finding{{
 		File: b.File, Line: b.Line, Rule: "softdelete",
-		Message: fmt.Sprintf("%s: read query missing `deleted_at IS NULL` filter; if including soft-deleted rows is intentional, name it *IncludingDeleted, *Audit, *Trash, or *AllVersions", b.Name),
+		Message: fmt.Sprintf("%s: read query missing `deleted_at IS NULL` filter; if including soft-deleted rows is intentional, name it *IncludingDeleted, *Audit, *Trash, or *AllVersions; if the table has no deleted_at column, add `-- blueprint-vet:skip softdelete` to the query body", b.Name),
 	}}
 }
 

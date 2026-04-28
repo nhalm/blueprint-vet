@@ -9,5 +9,5 @@ import (
 )
 
 func TestAnalyzer(t *testing.T) {
-	analysistest.Run(t, analysistest.TestData(), repoexecutor.Analyzer, "myapp/internal/repository")
+	analysistest.RunWithSuggestedFixes(t, analysistest.TestData(), repoexecutor.Analyzer, "myapp/internal/repository")
 }

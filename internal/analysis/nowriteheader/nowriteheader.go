@@ -18,7 +18,19 @@ var Analyzer = &analysis.Analyzer{
 Handlers must use chikit.SetResponse or chikit.SetError. The chikit.Handler
 middleware owns deferred response writing — calling WriteHeader directly
 bypasses canonical logging, error envelope formatting, and the response-state
-mutex.`,
+mutex.
+
+Bad:
+
+	func handle(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+Good:
+
+	func handle(w http.ResponseWriter, r *http.Request) {
+		chikit.SetError(r, chikit.ErrBadRequest)
+	}`,
 	Run:      run,
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 }

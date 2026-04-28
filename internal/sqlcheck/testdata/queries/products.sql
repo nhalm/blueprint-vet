@@ -23,3 +23,7 @@ UPDATE products SET deleted_at = now() WHERE id = $1;
 
 -- name: InsertProduct :one
 INSERT INTO products (id, name) VALUES ($1, $2) RETURNING id;
+
+-- name: ListEvents :many
+-- blueprint-vet:skip softdelete
+SELECT id, kind FROM events WHERE account_id = $1 ORDER BY created_at;

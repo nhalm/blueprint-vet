@@ -16,7 +16,21 @@ var Analyzer = &analysis.Analyzer{
 
 Without the directive, go generate ./... does not regenerate the mock when the
 interface changes. Tests then pass against a stale interface signature
-indefinitely — the worst kind of false-green CI.`,
+indefinitely — the worst kind of false-green CI.
+
+Bad — service/repository_interface.go missing the directive header:
+
+	package service
+
+	type ProductRepository interface { ... }
+
+Good:
+
+	//go:generate mockgen -source=repository_interface.go -destination=repository_interface_mock.go -package=service
+
+	package service
+
+	type ProductRepository interface { ... }`,
 	Run: run,
 }
 

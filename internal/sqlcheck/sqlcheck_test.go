@@ -63,6 +63,7 @@ func TestParseAttributes(t *testing.T) {
 		{"GetProductAudit", "many"},
 		{"SoftDeleteProduct", "exec"},
 		{"InsertProduct", "one"},
+		{"ListEvents", "many"},
 	}
 	if len(blocks) != len(want) {
 		t.Fatalf("got %d blocks, want %d", len(blocks), len(want))

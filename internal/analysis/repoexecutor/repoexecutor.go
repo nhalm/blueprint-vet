@@ -4,7 +4,10 @@
 package repoexecutor
 
 import (
+	"bytes"
+	"fmt"
 	"go/ast"
+	"go/printer"
 	"go/types"
 	"strings"
 
@@ -23,10 +26,37 @@ The blueprint's executorFromContext resolves the right executor from context.
 Skipping it is the classic "transactional service silently doesn't transact"
 bug.
 
-Use:
-    row, err := r.GetProductByAccountAndID(ctx, executorFromContext(ctx, r.db), id)`,
+Bad:
+
+	row, err := r.GetProductByAccountAndID(ctx, r.db, accountID, id)
+
+Good:
+
+	row, err := r.GetProductByAccountAndID(ctx, executorFromContext(ctx, r.db), accountID, id)`,
 	Run:      run,
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
+}
+
+// allowMethods is a comma-separated list of generated method names that may
+// receive `r.db` directly (typically wrapper methods that internally route
+// through executorFromContext). Configured via -allow-method flag.
+var allowMethods string
+
+func init() {
+	Analyzer.Flags.StringVar(&allowMethods, "allow-method", "",
+		"comma-separated generated method names exempt from the executor check")
+}
+
+func isAllowed(name string) bool {
+	if allowMethods == "" {
+		return false
+	}
+	for _, m := range strings.Split(allowMethods, ",") {
+		if strings.TrimSpace(m) == name {
+			return true
+		}
+	}
+	return false
 }
 
 func run(pass *analysis.Pass) (any, error) {
@@ -58,13 +88,29 @@ func run(pass *analysis.Pass) (any, error) {
 			if !isGeneratedMethod(pass, sel) {
 				return true
 			}
+			if isAllowed(sel.Sel.Name) {
+				return true
+			}
 			if len(call.Args) < 2 {
 				return true
 			}
 			if _, ok := call.Args[1].(*ast.SelectorExpr); ok {
-				pass.Reportf(call.Args[1].Pos(),
-					"pass executorFromContext(ctx, r.db) instead of a direct field; %s.%s bypasses the active transaction",
-					exprString(sel.X), sel.Sel.Name)
+				ctxText := nodeText(pass, call.Args[0])
+				dbText := nodeText(pass, call.Args[1])
+				pass.Report(analysis.Diagnostic{
+					Pos: call.Args[1].Pos(),
+					Message: fmt.Sprintf(
+						"pass executorFromContext(ctx, r.db) instead of a direct field; %s.%s bypasses the active transaction",
+						exprString(sel.X), sel.Sel.Name),
+					SuggestedFixes: []analysis.SuggestedFix{{
+						Message: "wrap with executorFromContext",
+						TextEdits: []analysis.TextEdit{{
+							Pos:     call.Args[1].Pos(),
+							End:     call.Args[1].End(),
+							NewText: fmt.Appendf(nil, "executorFromContext(%s, %s)", ctxText, dbText),
+						}},
+					}},
+				})
 			}
 			return true
 		})
@@ -126,4 +172,12 @@ func exprString(e ast.Expr) string {
 		return id.Name
 	}
 	return "<recv>"
+}
+
+func nodeText(pass *analysis.Pass, n ast.Node) string {
+	var buf bytes.Buffer
+	if err := printer.Fprint(&buf, pass.Fset, n); err != nil {
+		return ""
+	}
+	return buf.String()
 }

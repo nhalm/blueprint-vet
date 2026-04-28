@@ -19,7 +19,15 @@ var Analyzer = &analysis.Analyzer{
 
 Use chikit.SetResponse / chikit.SetError. Direct encoding produces inconsistent
 error envelopes, skips canonical logging, and races with chikit.Handler's
-deferred response writer.`,
+deferred response writer.
+
+Bad:
+
+	json.NewEncoder(w).Encode(map[string]string{"err": "bad"})
+
+Good:
+
+	chikit.SetResponse(r, http.StatusOK, dto)`,
 	Run:      run,
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 }
