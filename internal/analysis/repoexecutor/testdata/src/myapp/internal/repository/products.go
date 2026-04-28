@@ -1,0 +1,26 @@
+package repository
+
+import (
+	"context"
+
+	"myapp/internal/repository/generated"
+)
+
+type DB struct{}
+
+type ProductRepository struct {
+	db *DB
+	*generated.ProductRepository
+}
+
+func executorFromContext(ctx context.Context, db *DB) generated.Executor {
+	return nil
+}
+
+func (r *ProductRepository) GetGood(ctx context.Context, id string) (string, error) {
+	return r.GetProductByID(ctx, executorFromContext(ctx, r.db), id)
+}
+
+func (r *ProductRepository) GetBad(ctx context.Context, id string) (string, error) {
+	return r.GetProductByID(ctx, r.db, id) // want `pass executorFromContext`
+}
