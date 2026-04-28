@@ -3,7 +3,11 @@
 package handlerjsonbool
 
 import (
+	"bytes"
+	"fmt"
 	"go/ast"
+	"go/printer"
+	"go/token"
 	"go/types"
 	"strings"
 
@@ -20,8 +24,17 @@ The bool return signals whether validation/binding failed. If the call result
 is discarded, validation errors silently set the response but the handler
 keeps running — calling the service with a zero-value request struct.
 
-Use:
-    if !chikit.JSON(r, &dst) { return }`,
+Bad:
+
+	chikit.JSON(r, &req)
+	result, err := svc.Create(r.Context(), req) // req is zero on validation failure
+
+Good:
+
+	if !chikit.JSON(r, &req) {
+		return
+	}
+	result, err := svc.Create(r.Context(), req)`,
 	Run:      run,
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 }
@@ -44,18 +57,21 @@ func run(pass *analysis.Pass) (any, error) {
 			return true
 		}
 		parent := stack[len(stack)-2]
+		name := call.Fun.(*ast.SelectorExpr).Sel.Name
 		switch p := parent.(type) {
 		case *ast.ExprStmt:
-			pass.Reportf(call.Pos(),
-				"chikit.%s result discarded; use `if !chikit.%s(...) { return }`",
-				call.Fun.(*ast.SelectorExpr).Sel.Name,
-				call.Fun.(*ast.SelectorExpr).Sel.Name)
+			pass.Report(analysis.Diagnostic{
+				Pos:            call.Pos(),
+				Message:        fmt.Sprintf("chikit.%s result discarded; use `if !chikit.%s(...) { return }`", name, name),
+				SuggestedFixes: []analysis.SuggestedFix{ifGuardFix(pass, p.Pos(), p.End(), call)},
+			})
 		case *ast.AssignStmt:
 			if allBlank(p.Lhs) {
-				pass.Reportf(call.Pos(),
-					"chikit.%s result discarded via _; use `if !chikit.%s(...) { return }`",
-					call.Fun.(*ast.SelectorExpr).Sel.Name,
-					call.Fun.(*ast.SelectorExpr).Sel.Name)
+				pass.Report(analysis.Diagnostic{
+					Pos:            call.Pos(),
+					Message:        fmt.Sprintf("chikit.%s result discarded via _; use `if !chikit.%s(...) { return }`", name, name),
+					SuggestedFixes: []analysis.SuggestedFix{ifGuardFix(pass, p.Pos(), p.End(), call)},
+				})
 			}
 		}
 		return true
@@ -93,4 +109,17 @@ func allBlank(lhs []ast.Expr) bool {
 		}
 	}
 	return len(lhs) > 0
+}
+
+func ifGuardFix(pass *analysis.Pass, start, end token.Pos, call *ast.CallExpr) analysis.SuggestedFix {
+	var buf bytes.Buffer
+	_ = printer.Fprint(&buf, pass.Fset, call)
+	return analysis.SuggestedFix{
+		Message: "wrap call in `if !... { return }`",
+		TextEdits: []analysis.TextEdit{{
+			Pos:     start,
+			End:     end,
+			NewText: fmt.Appendf(nil, "if !%s {\n\treturn\n}", buf.String()),
+		}},
+	}
 }

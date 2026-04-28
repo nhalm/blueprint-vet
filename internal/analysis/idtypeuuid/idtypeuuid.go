@@ -21,7 +21,21 @@ models that hold IDs as strings short-circuit the boundary, push UUID parsing
 into queries, and produce worse error messages on bad input.
 
 Fields under /internal/models whose name is ID or ends in ID must be
-uuid.UUID or *uuid.UUID.`,
+uuid.UUID or *uuid.UUID.
+
+Bad:
+
+	type Product struct {
+		ID        string
+		AccountID string
+	}
+
+Good:
+
+	type Product struct {
+		ID        uuid.UUID
+		AccountID uuid.UUID
+	}`,
 	Run:      run,
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 }

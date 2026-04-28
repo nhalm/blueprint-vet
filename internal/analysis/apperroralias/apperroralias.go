@@ -15,7 +15,16 @@ var Analyzer = &analysis.Analyzer{
 
 The package name "errors" collides with stdlib. The blueprint codified
 "apperrors" as the alias. Bare imports shadow stdlib errors; other aliases
-(apierrors, domerr, myerrors) produce drift across files in the same codebase.`,
+(apierrors, domerr, myerrors) produce drift across files in the same codebase.
+
+Bad:
+
+	import "myapp/internal/errors"
+	import apierrors "myapp/internal/errors"
+
+Good:
+
+	import apperrors "myapp/internal/errors"`,
 	Run: run,
 }
 

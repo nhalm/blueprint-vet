@@ -4,7 +4,7 @@ Static analysis for services built from [go-blueprint](https://github.com/nhalm/
 
 A multichecker binary plus a SQL file checker that enforce blueprint conformance rules — handler response writing, repository executor routing, model ID typing, soft-delete defaults, and other patterns documented in the blueprint that compile and pass tests but produce silent-but-wrong behavior.
 
-> **Status:** early development. Currently incubating as a directory inside the `go-blueprint` repo. Will move to its own repository (`github.com/nhalm/blueprint-vet`) once the rule set stabilizes.
+> **Status:** early development (`v0.x`). Rule set may shift; pin to a tag once `v1.0.0` ships.
 
 ## Install
 
@@ -35,6 +35,7 @@ blueprint-sql-check ./internal/repository/queries
 | R-7 | `apperroralias`   | `internal/errors` imported without the `apperrors` alias. |
 | R-8 | `nofmtprint`      | `fmt.Print*` / `fmt.Fprint*` / `fmt.Sprint*` outside `cmd/` and `internal/config/`. |
 | R-11| `layerdirection`  | `internal/models` importing repository/service/api; `internal/api` importing `internal/repository` directly. |
+| R-12| `errortranslate`  | Repository methods returning bare `err` from generated calls instead of wrapping through `translateError`. |
 
 ### SQL file rules (`blueprint-sql-check`)
 

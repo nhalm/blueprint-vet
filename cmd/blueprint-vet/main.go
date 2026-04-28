@@ -4,6 +4,7 @@ import (
 	"golang.org/x/tools/go/analysis/multichecker"
 
 	"github.com/nhalm/blueprint-vet/internal/analysis/apperroralias"
+	"github.com/nhalm/blueprint-vet/internal/analysis/errortranslate"
 	"github.com/nhalm/blueprint-vet/internal/analysis/handlerjsonbool"
 	"github.com/nhalm/blueprint-vet/internal/analysis/idtypeuuid"
 	"github.com/nhalm/blueprint-vet/internal/analysis/layerdirection"
@@ -17,6 +18,7 @@ import (
 func main() {
 	multichecker.Main(
 		apperroralias.Analyzer,
+		errortranslate.Analyzer,
 		handlerjsonbool.Analyzer,
 		idtypeuuid.Analyzer,
 		layerdirection.Analyzer,

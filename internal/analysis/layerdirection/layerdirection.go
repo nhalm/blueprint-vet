@@ -17,7 +17,15 @@ var Analyzer = &analysis.Analyzer{
 	Doc: `enforce blueprint layer direction across internal/ packages
 
 internal/models is the deepest layer and cannot import upward.
-internal/api consumes domain through the service interface, not the repository directly.`,
+internal/api consumes domain through the service interface, not the repository directly.
+
+Bad — internal/api/products.go importing the repository:
+
+	import "myapp/internal/repository"
+
+Good — go through the service:
+
+	import "myapp/internal/service"`,
 	Run: run,
 }
 

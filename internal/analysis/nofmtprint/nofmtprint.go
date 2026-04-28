@@ -18,7 +18,15 @@ var Analyzer = &analysis.Analyzer{
 
 fmt.Print* lands on stdout, bypassing Datadog. Allowed only in:
   - cmd/<app>/         (CLI feedback, after the canonlog event)
-  - internal/config/   (pre-canonlog config-load errors)`,
+  - internal/config/   (pre-canonlog config-load errors)
+
+Bad:
+
+	fmt.Println("user created")
+
+Good:
+
+	canonlog.InfoAdd(ctx, "event", "user_created")`,
 	Run:      run,
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 }

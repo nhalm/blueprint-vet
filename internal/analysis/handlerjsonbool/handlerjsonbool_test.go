@@ -9,5 +9,5 @@ import (
 )
 
 func TestAnalyzer(t *testing.T) {
-	analysistest.Run(t, analysistest.TestData(), handlerjsonbool.Analyzer, "myapp/internal/api")
+	analysistest.RunWithSuggestedFixes(t, analysistest.TestData(), handlerjsonbool.Analyzer, "myapp/internal/api")
 }
