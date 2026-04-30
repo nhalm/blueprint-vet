@@ -33,7 +33,7 @@ version: v2.11.4
 plugins:
   - module: 'github.com/nhalm/blueprint-vet'
     import: 'github.com/nhalm/blueprint-vet/plugin'
-    version: vX.Y.Z   # any blueprint-vet release with the plugin
+    version: latest   # or pin to a specific release tag
 ```
 
 Then enable it in `.golangci.yml`:
