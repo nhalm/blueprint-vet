@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/tools/go/analysis/analysistest"
 
-	"github.com/nhalm/blueprint-vet/internal/analysis/mockgendirective"
+	"github.com/nhalm/blueprint-vet/analysis/mockgendirective"
 )
 
 func TestAnalyzer(t *testing.T) {

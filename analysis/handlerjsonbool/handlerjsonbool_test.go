@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/tools/go/analysis/analysistest"
 
-	"github.com/nhalm/blueprint-vet/internal/analysis/handlerjsonbool"
+	"github.com/nhalm/blueprint-vet/analysis/handlerjsonbool"
 )
 
 func TestAnalyzer(t *testing.T) {

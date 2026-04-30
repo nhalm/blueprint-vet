@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/tools/go/analysis/analysistest"
 
-	"github.com/nhalm/blueprint-vet/internal/analysis/idtypeuuid"
+	"github.com/nhalm/blueprint-vet/analysis/idtypeuuid"
 )
 
 func TestAnalyzer(t *testing.T) {

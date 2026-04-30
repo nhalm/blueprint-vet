@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/tools/go/analysis/analysistest"
 
-	"github.com/nhalm/blueprint-vet/internal/analysis/apperroralias"
+	"github.com/nhalm/blueprint-vet/analysis/apperroralias"
 )
 
 func TestAnalyzer(t *testing.T) {
