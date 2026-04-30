@@ -33,7 +33,7 @@ blueprint-sql-check ./internal/repository/queries
 | R-5 | `repoexecutor`    | Repository methods passing `r.db` directly to generated calls instead of `executorFromContext(ctx, r.db)`. |
 | R-6 | `idtypeuuid`      | Model ID fields under `internal/models` typed as something other than `uuid.UUID`. |
 | R-7 | `apperroralias`   | `internal/errors` imported without the `apperrors` alias. |
-| R-8 | `nofmtprint`      | `fmt.Print*` / `fmt.Fprint*` / `fmt.Sprint*` outside `cmd/` and `internal/config/`. |
+| R-8 | `nofmtprint`      | `fmt.Print*` / `fmt.Fprint*` outside `cmd/` and `internal/config/`. (`fmt.Sprint*` is allowed — it returns a string and performs no I/O.) |
 | R-11| `layerdirection`  | `internal/models` importing repository/service/api; `internal/api` importing `internal/repository` directly. |
 | R-12| `errortranslate`  | Repository methods returning bare `err` from generated calls instead of wrapping through `translateError`. |
 

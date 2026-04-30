@@ -1,5 +1,6 @@
-// Package nofmtprint implements an analyzer that flags fmt.Print*,
-// fmt.Fprint*, and fmt.Sprint* calls outside whitelisted paths.
+// Package nofmtprint implements an analyzer that flags fmt.Print*
+// and fmt.Fprint* calls outside whitelisted paths. The fmt.Sprint*
+// family returns a string and performs no I/O, so it is not banned.
 package nofmtprint
 
 import (
@@ -14,11 +15,16 @@ import (
 
 var Analyzer = &analysis.Analyzer{
 	Name: "nofmtprint",
-	Doc: `runtime logging must go through canonlog, not fmt.Print*
+	Doc: `runtime logging must go through canonlog, not fmt.Print* / fmt.Fprint*
 
-fmt.Print* lands on stdout, bypassing Datadog. Allowed only in:
+fmt.Print* lands on stdout, bypassing Datadog; fmt.Fprint* writes to an
+arbitrary io.Writer, which is the same problem when the writer is os.Stderr
+or a log file. Allowed only in:
   - cmd/<app>/         (CLI feedback, after the canonlog event)
   - internal/config/   (pre-canonlog config-load errors)
+
+The fmt.Sprint* family is not banned: it returns a string and performs no
+I/O, so it cannot bypass canonlog. Use it freely for value formatting.
 
 Bad:
 
@@ -38,9 +44,6 @@ var bannedNames = map[string]bool{
 	"Fprint":   true,
 	"Fprintln": true,
 	"Fprintf":  true,
-	"Sprint":   true,
-	"Sprintln": true,
-	"Sprintf":  true,
 }
 
 func run(pass *analysis.Pass) (any, error) {
