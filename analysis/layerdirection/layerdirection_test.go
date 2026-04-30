@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/tools/go/analysis/analysistest"
 
-	"github.com/nhalm/blueprint-vet/internal/analysis/layerdirection"
+	"github.com/nhalm/blueprint-vet/analysis/layerdirection"
 )
 
 func TestAnalyzer(t *testing.T) {

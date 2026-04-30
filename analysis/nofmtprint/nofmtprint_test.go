@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/tools/go/analysis/analysistest"
 
-	"github.com/nhalm/blueprint-vet/internal/analysis/nofmtprint"
+	"github.com/nhalm/blueprint-vet/analysis/nofmtprint"
 )
 
 func TestAnalyzer(t *testing.T) {

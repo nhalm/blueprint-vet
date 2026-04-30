@@ -5,7 +5,7 @@ import (
 
 	"golang.org/x/tools/go/analysis/analysistest"
 
-	"github.com/nhalm/blueprint-vet/internal/analysis/nowriteheader"
+	"github.com/nhalm/blueprint-vet/analysis/nowriteheader"
 )
 
 func TestAnalyzer(t *testing.T) {

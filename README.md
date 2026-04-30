@@ -20,6 +20,46 @@ blueprint-vet ./...
 blueprint-sql-check ./internal/repository/queries
 ```
 
+### As a golangci-lint plugin
+
+The Go AST analyzers can also run inside `golangci-lint` via the [Module
+Plugin System](https://golangci-lint.run/docs/plugins/module-plugins/), which
+collapses two Go-AST tools into a single `golangci-lint run` invocation.
+
+Register the plugin in a `.custom-gcl.yml` next to your `.golangci.yml`:
+
+```yaml
+version: v2.11.4
+plugins:
+  - module: 'github.com/nhalm/blueprint-vet'
+    import: 'github.com/nhalm/blueprint-vet/plugin'
+    version: latest   # or pin to a specific release tag
+```
+
+Then enable it in `.golangci.yml`:
+
+```yaml
+version: "2"
+linters:
+  enable:
+    - blueprint-vet
+  settings:
+    custom:
+      blueprint-vet:
+        type: module
+        description: Blueprint conformance rules (R-1..R-7, R-11, R-12).
+```
+
+Build the custom binary once and run as usual:
+
+```sh
+golangci-lint custom        # produces ./custom-gcl
+./custom-gcl run ./...
+```
+
+`blueprint-sql-check` is a SQL-file linter and stays a standalone binary —
+golangci-lint only lints Go source.
+
 ## Rules
 
 ### Go AST analyzers (`blueprint-vet`)
@@ -54,4 +94,4 @@ make test   # run analyzer tests (golden testdata)
 make build  # compile binaries
 ```
 
-Each analyzer lives in its own package under `internal/analysis/<name>/` with a sibling `_test.go` and `testdata/` directory. Tests use `analysistest.Run` against `// want "..."` annotations in testdata source.
+Each analyzer lives in its own package under `analysis/<name>/` with a sibling `_test.go` and `testdata/` directory. Tests use `analysistest.Run` against `// want "..."` annotations in testdata source. The golangci-lint Module Plugin entry point lives in `plugin/` and re-exports the same analyzer set used by `cmd/blueprint-vet`.

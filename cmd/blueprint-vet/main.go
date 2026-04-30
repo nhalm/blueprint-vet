@@ -3,16 +3,16 @@ package main
 import (
 	"golang.org/x/tools/go/analysis/multichecker"
 
-	"github.com/nhalm/blueprint-vet/internal/analysis/apperroralias"
-	"github.com/nhalm/blueprint-vet/internal/analysis/errortranslate"
-	"github.com/nhalm/blueprint-vet/internal/analysis/handlerjsonbool"
-	"github.com/nhalm/blueprint-vet/internal/analysis/idtypeuuid"
-	"github.com/nhalm/blueprint-vet/internal/analysis/layerdirection"
-	"github.com/nhalm/blueprint-vet/internal/analysis/mockgendirective"
-	"github.com/nhalm/blueprint-vet/internal/analysis/nofmtprint"
-	"github.com/nhalm/blueprint-vet/internal/analysis/nojsonencode"
-	"github.com/nhalm/blueprint-vet/internal/analysis/nowriteheader"
-	"github.com/nhalm/blueprint-vet/internal/analysis/repoexecutor"
+	"github.com/nhalm/blueprint-vet/analysis/apperroralias"
+	"github.com/nhalm/blueprint-vet/analysis/errortranslate"
+	"github.com/nhalm/blueprint-vet/analysis/handlerjsonbool"
+	"github.com/nhalm/blueprint-vet/analysis/idtypeuuid"
+	"github.com/nhalm/blueprint-vet/analysis/layerdirection"
+	"github.com/nhalm/blueprint-vet/analysis/mockgendirective"
+	"github.com/nhalm/blueprint-vet/analysis/nofmtprint"
+	"github.com/nhalm/blueprint-vet/analysis/nojsonencode"
+	"github.com/nhalm/blueprint-vet/analysis/nowriteheader"
+	"github.com/nhalm/blueprint-vet/analysis/repoexecutor"
 )
 
 func main() {
