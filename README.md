@@ -1,10 +1,15 @@
 # blueprint-vet
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/nhalm/blueprint-vet.svg)](https://pkg.go.dev/github.com/nhalm/blueprint-vet)
+[![Go Report Card](https://goreportcard.com/badge/github.com/nhalm/blueprint-vet)](https://goreportcard.com/report/github.com/nhalm/blueprint-vet)
+[![CI](https://github.com/nhalm/blueprint-vet/actions/workflows/ci.yml/badge.svg)](https://github.com/nhalm/blueprint-vet/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/nhalm/blueprint-vet)](https://github.com/nhalm/blueprint-vet/releases)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/nhalm/blueprint-vet)](go.mod)
+[![License](https://img.shields.io/github/license/nhalm/blueprint-vet)](LICENSE)
+
 Static analysis for services built from [go-blueprint](https://github.com/nhalm/go-blueprint) patterns.
 
 A multichecker binary plus a SQL file checker that enforce blueprint conformance rules — handler response writing, repository executor routing, model ID typing, soft-delete defaults, and other patterns documented in the blueprint that compile and pass tests but produce silent-but-wrong behavior.
-
-> **Status:** early development (`v0.x`). Rule set may shift; pin to a tag once `v1.0.0` ships.
 
 ## Install
 
